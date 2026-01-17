@@ -9,7 +9,7 @@
   [:map
    [:title [:string {:min 1 :max 200}]]
    [:description {:optional true} [:string {:max 1000}]]
-   [:status {:optional true} CardStatus]])
+   [:status CardStatus]])
 
 (def UpdateCardRequest
   [:map

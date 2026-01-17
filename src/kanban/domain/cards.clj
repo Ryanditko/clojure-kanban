@@ -13,11 +13,8 @@
 (defn- current-timestamp []
   (str (java.time.Instant/now)))
 
-(defn create-card! [{:keys [title description status] :or {status "todo"}}]
-  (when-not (valid-status? status)
-    (throw (ex-info "Invalid status" {:type :invalid-status
-                                      :status status
-                                      :valid-statuses valid-statuses})))
+(defn create-card! [{:keys [title description status]}]
+  ;; Schema validation ensures status is present and valid
   (let [id (generate-id)
         now (current-timestamp)
         card {:id id
