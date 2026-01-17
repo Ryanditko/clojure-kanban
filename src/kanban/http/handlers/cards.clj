@@ -21,16 +21,25 @@
          :body {:message "Card created successfully"
                 :card card}}))
     (catch clojure.lang.ExceptionInfo e
-      (if (= :validation-error (:type (ex-data e)))
-        {:status 400
-         :body {:error "Validation failed"
-                :details (:errors (ex-data e))}}
-        {:status 500
-         :body {:error "Internal server error"
-                :message (.getMessage e)}}))
+      (let [error-type (:type (ex-data e))]
+        (cond
+          (= :validation-error error-type)
+          {:status 400
+           :body {:error "Validation failed"
+                  :details (:errors (ex-data e))}}
+
+          (= :invalid-status error-type)
+          {:status 400
+           :body {:error "Invalid status"
+                  :details (ex-data e)}}
+
+          :else
+          {:status 500
+           :body {:error "Internal server error"
+                  :message (.getMessage e)}})))
     (catch Exception e
-      {:status 400
-       :body {:error "Failed to create card"
+      {:status 500
+       :body {:error "Unexpected error"
               :message (.getMessage e)}})))
 
 (defn get-card [req]
