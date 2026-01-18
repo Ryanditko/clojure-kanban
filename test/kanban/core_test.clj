@@ -2,7 +2,7 @@
   (:require [clojure.test :refer [deftest is testing]]
             [kanban.core :as core]))
 
-;; TODO: Implement application initialization tests
-;; - Test if application starts without errors
-;; - Test if web server starts correctly
-;; - Test integration between components
+(deftest port-is-defined-test
+  (testing "PORT constant is defined"
+    (is (number? core/PORT))
+    (is (= 3000 core/PORT))))

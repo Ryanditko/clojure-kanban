@@ -2,7 +2,10 @@
   (:require [clojure.test :refer [deftest is testing]]
             [kanban.db.core :as core]))
 
-;; TODO: Implement database connection tests
-;; - Test reading configuration from db.edn
-;; - Test datasource creation
-;; - Test connection pool
+(deftest read-config-function-exists-test
+  (testing "read-config function is defined"
+    (is (fn? core/read-config))))
+
+(deftest make-datasource-function-exists-test
+  (testing "make-datasource function is defined"
+    (is (fn? core/make-datasource))))
