@@ -1,4 +1,5 @@
-(ns kanban.domain.cards)
+(ns kanban.domain.cards
+  (:require [kanban.db.card :as db]))
 
 (defonce cards-db (atom {}))
 
@@ -7,34 +8,21 @@
 (defn valid-status? [status]
   (contains? valid-statuses status))
 
-(defn- generate-id []
-  (str (java.util.UUID/randomUUID)))
-
 (defn- current-timestamp []
   (str (java.time.Instant/now)))
 
-(defn create-card! [{:keys [title description status]}]
-  ;; Schema validation ensures status is present and valid
-  (let [id (generate-id)
-        now (current-timestamp)
-        card {:id id
-              :title title
-              :description (or description "")
-              :status status
-              :created-at now
-              :updated-at now}]
-    (swap! cards-db assoc id card)
-    card))
+(defn list-cards [datasource query-params]
+  (let [status (:status query-params)]
+    (if status 
+      (db/find-cards-by-status datasource status)
+      (db/find-all-cards datasource))))
+
+(defn create-card! [datasource card]
+  (let [card' (update card :description #(or % ""))]
+    (db/insert-card datasource card')))
 
 (defn get-card [id]
   (get @cards-db id))
-
-(defn list-cards
-  ([] (vals @cards-db))
-  ([status]
-   (if status
-     (filter #(= (:status %) status) (vals @cards-db))
-     (vals @cards-db))))
 
 (defn update-card! [id updates]
   (when-not (get-card id)
@@ -64,23 +52,23 @@
                                       :valid-statuses valid-statuses})))
   (update-card! id {:status new-status}))
 
-(defn get-board []
-  {:todo (list-cards "todo")
-   :doing (list-cards "doing")
-   :done (list-cards "done")})
+;(defn get-board []
+;  {:todo (list-cards "todo")
+;   :doing (list-cards "doing")
+;   :done (list-cards "done")})
 
-(defn count-by-status []
-  {:todo (count (list-cards "todo"))
-   :doing (count (list-cards "doing"))
-   :done (count (list-cards "done"))})
+;(defn count-by-status []
+;  {:todo (count (list-cards "todo"))
+;   :doing (count (list-cards "doing"))
+;   :done (count (list-cards "done"))})
 
 (defn clear-all! []
   (reset! cards-db {}))
 
-(defn seed-data! []
-  (clear-all!)
-  (create-card! {:title "Implement login" :description "Create auth screen and API" :status "todo"})
-  (create-card! {:title "Fix header bug" :description "Header not showing on mobile" :status "doing"})
-  (create-card! {:title "Deploy to production" :description "Deploy v1.0" :status "done"})
-  (println "Sample data created!")
-  (get-board))
+;(defn seed-data! []
+;  (clear-all!)
+;  (create-card! {:title "Implement login" :description "Create auth screen and API" :status "todo"})
+; (create-card! {:title "Fix header bug" :description "Header not showing on mobile" :status "doing"})
+;  (create-card! {:title "Deploy to production" :description "Deploy v1.0" :status "done"});
+;  (println "Sample data created!")
+;  (get-board))
