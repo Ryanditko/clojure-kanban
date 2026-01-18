@@ -13,7 +13,7 @@
 
 (defn list-cards [datasource query-params]
   (let [status (:status query-params)]
-    (if status 
+    (if status
       (db/find-cards-by-status datasource status)
       (db/find-all-cards datasource))))
 
@@ -52,23 +52,5 @@
                                       :valid-statuses valid-statuses})))
   (update-card! id {:status new-status}))
 
-;(defn get-board []
-;  {:todo (list-cards "todo")
-;   :doing (list-cards "doing")
-;   :done (list-cards "done")})
-
-;(defn count-by-status []
-;  {:todo (count (list-cards "todo"))
-;   :doing (count (list-cards "doing"))
-;   :done (count (list-cards "done"))})
-
 (defn clear-all! []
   (reset! cards-db {}))
-
-;(defn seed-data! []
-;  (clear-all!)
-;  (create-card! {:title "Implement login" :description "Create auth screen and API" :status "todo"})
-; (create-card! {:title "Fix header bug" :description "Header not showing on mobile" :status "doing"})
-;  (create-card! {:title "Deploy to production" :description "Deploy v1.0" :status "done"});
-;  (println "Sample data created!")
-;  (get-board))
