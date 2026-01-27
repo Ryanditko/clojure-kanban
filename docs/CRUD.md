@@ -17,14 +17,14 @@ The server will be available at `http://localhost:3000`
 ### Verify API is running
 
 ```bash
-curl http://localhost:3000/api/health
+curl http://localhost:3000/health
 ```
 
 Expected response:
 
 ```json
 {
-  "message": "ok"
+  "status": "ok"
 }
 ```
 
@@ -35,7 +35,7 @@ Expected response:
 #### Successful creation
 
 ```bash
-curl -X POST http://localhost:3000/api/cards \
+curl -X POST http://localhost:3000/cards \
   -H "Content-Type: application/json" \
   -d '{
     "title": "Implement authentication",
@@ -63,7 +63,7 @@ Expected response (201):
 #### Create card without description (optional field)
 
 ```bash
-curl -X POST http://localhost:3000/api/cards \
+curl -X POST http://localhost:3000/cards \
   -H "Content-Type: application/json" \
   -d '{
     "title": "Code review",
@@ -76,7 +76,7 @@ curl -X POST http://localhost:3000/api/cards \
 **Missing required status field:**
 
 ```bash
-curl -X POST http://localhost:3000/api/cards \
+curl -X POST http://localhost:3000/cards \
   -H "Content-Type: application/json" \
   -d '{
     "title": "Invalid card"
@@ -97,7 +97,7 @@ Expected response (400):
 **Invalid status value:**
 
 ```bash
-curl -X POST http://localhost:3000/api/cards \
+curl -X POST http://localhost:3000/cards \
   -H "Content-Type: application/json" \
   -d '{
     "title": "Invalid card",
@@ -119,7 +119,7 @@ Expected response (400):
 **Extra fields not allowed (closed map validation):**
 
 ```bash
-curl -X POST http://localhost:3000/api/cards \
+curl -X POST http://localhost:3000/cards \
   -H "Content-Type: application/json" \
   -d '{
     "title": "Card with extra field",
@@ -142,7 +142,7 @@ Expected response (400):
 ### List all cards
 
 ```bash
-curl http://localhost:3000/api/cards
+curl http://localhost:3000/cards
 ```
 
 Expected response:
@@ -175,53 +175,31 @@ Expected response:
 List only "todo" cards:
 
 ```bash
-curl "http://localhost:3000/api/cards?status=todo"
+curl "http://localhost:3000/cards?status=todo"
 ```
 
 List only "doing" cards:
 
 ```bash
-curl "http://localhost:3000/api/cards?status=doing"
+curl "http://localhost:3000/cards?status=doing"
 ```
 
 List only "done" cards:
 
 ```bash
-curl "http://localhost:3000/api/cards?status=done"
-```
-
-### Get board view (grouped by status)
-
-```bash
-curl http://localhost:3000/api/cards/board
-```
-
-Expected response:
-
-```json
-{
-  "todo": [
-    { "id": "...", "title": "Card in TODO", ... }
-  ],
-  "doing": [
-    { "id": "...", "title": "Card in DOING", ... }
-  ],
-  "done": [
-    { "id": "...", "title": "COMPLETED card", ... }
-  ]
-}
+curl "http://localhost:3000/cards?status=done"
 ```
 
 ### Get specific card by ID
 
 ```bash
-curl http://localhost:3000/api/cards/{CARD_ID}
+curl http://localhost:3000/cards/{CARD_ID}
 ```
 
 Example:
 
 ```bash
-curl http://localhost:3000/api/cards/123e4567-e89b-12d3-a456-426614174000
+curl http://localhost:3000/cards/123e4567-e89b-12d3-a456-426614174000
 ```
 
 Expected response (200):
@@ -242,7 +220,7 @@ Expected response (200):
 #### Not found error
 
 ```bash
-curl http://localhost:3000/api/cards/non-existent-id
+curl http://localhost:3000/cards/non-existent-id
 ```
 
 Expected response (404):
@@ -259,7 +237,7 @@ Expected response (404):
 #### Update title and description
 
 ```bash
-curl -X PUT http://localhost:3000/api/cards/{CARD_ID} \
+curl -X PUT http://localhost:3000/cards/{CARD_ID} \
   -H "Content-Type: application/json" \
   -d '{
     "title": "Updated title",
@@ -270,7 +248,7 @@ curl -X PUT http://localhost:3000/api/cards/{CARD_ID} \
 #### Update only status
 
 ```bash
-curl -X PUT http://localhost:3000/api/cards/{CARD_ID} \
+curl -X PUT http://localhost:3000/cards/{CARD_ID} \
   -H "Content-Type: application/json" \
   -d '{
     "status": "doing"
@@ -280,7 +258,7 @@ curl -X PUT http://localhost:3000/api/cards/{CARD_ID} \
 #### Update all fields
 
 ```bash
-curl -X PUT http://localhost:3000/api/cards/{CARD_ID} \
+curl -X PUT http://localhost:3000/cards/{CARD_ID} \
   -H "Content-Type: application/json" \
   -d '{
     "title": "Completely updated card",
@@ -308,7 +286,7 @@ Expected response (200):
 #### Validation error with extra field
 
 ```bash
-curl -X PUT http://localhost:3000/api/cards/{CARD_ID} \
+curl -X PUT http://localhost:3000/cards/{CARD_ID} \
   -H "Content-Type: application/json" \
   -d '{
     "title": "Test",
@@ -327,36 +305,10 @@ Expected response (400):
 }
 ```
 
-### Move card to another column
-
-```bash
-curl -X PATCH http://localhost:3000/api/cards/{CARD_ID}/move \
-  -H "Content-Type: application/json" \
-  -d '{
-    "status": "done"
-  }'
-```
-
-Expected response (200):
-
-```json
-{
-  "message": "Card moved successfully",
-  "card": {
-    "id": "...",
-    "title": "...",
-    "description": "...",
-    "status": "done",
-    "created-at": "...",
-    "updated-at": "2026-01-17T12:00:00Z"
-  }
-}
-```
-
 ### Delete a card
 
 ```bash
-curl -X DELETE http://localhost:3000/api/cards/{CARD_ID}
+curl -X DELETE http://localhost:3000/cards/{CARD_ID}
 ```
 
 Expected response (204):
@@ -368,7 +320,7 @@ Expected response (204):
 #### Not found error
 
 ```bash
-curl -X DELETE http://localhost:3000/api/cards/non-existent-id
+curl -X DELETE http://localhost:3000/cards/non-existent-id
 ```
 
 Expected response (404):
@@ -386,10 +338,10 @@ Execute this flow to test all operations:
 
 ```bash
 # 1. Check API health
-curl http://localhost:3000/api/health
+curl http://localhost:3000/health
 
 # 2. Create a card
-CARD_RESPONSE=$(curl -s -X POST http://localhost:3000/api/cards \
+CARD_RESPONSE=$(curl -s -X POST http://localhost:3000/cards \
   -H "Content-Type: application/json" \
   -d '{"title":"Complete test","status":"todo"}')
 
@@ -403,26 +355,18 @@ $CARD_ID = ($CARD_RESPONSE | ConvertFrom-Json).card.id
 # CARD_ID=$(echo $CARD_RESPONSE | jq -r '.card.id')
 
 # 4. List all cards
-curl http://localhost:3000/api/cards
+curl http://localhost:3000/cards
 
 # 5. Get specific card
-curl http://localhost:3000/api/cards/$CARD_ID
+curl http://localhost:3000/cards/$CARD_ID
 
 # 6. Update the card
-curl -X PUT http://localhost:3000/api/cards/$CARD_ID \
+curl -X PUT http://localhost:3000/cards/$CARD_ID \
   -H "Content-Type: application/json" \
   -d '{"status":"doing"}'
 
-# 7. Move the card
-curl -X PATCH http://localhost:3000/api/cards/$CARD_ID/move \
-  -H "Content-Type: application/json" \
-  -d '{"status":"done"}'
-
-# 8. View board
-curl http://localhost:3000/api/cards/board
-
-# 9. Delete the card
-curl -X DELETE http://localhost:3000/api/cards/$CARD_ID
+# 7. Delete the card
+curl -X DELETE http://localhost:3000/cards/$CARD_ID
 ```
 
 ## Validation Tests (Error Cases)
@@ -430,7 +374,7 @@ curl -X DELETE http://localhost:3000/api/cards/$CARD_ID
 ### Required status field
 
 ```bash
-curl -X POST http://localhost:3000/api/cards \
+curl -X POST http://localhost:3000/cards \
   -H "Content-Type: application/json" \
   -d '{"title":"No status"}'
 # Expected: 400 - Validation failed
@@ -439,7 +383,7 @@ curl -X POST http://localhost:3000/api/cards \
 ### Invalid status value
 
 ```bash
-curl -X POST http://localhost:3000/api/cards \
+curl -X POST http://localhost:3000/cards \
   -H "Content-Type: application/json" \
   -d '{"title":"Wrong status","status":"blocked"}'
 # Expected: 400 - Validation failed
@@ -448,7 +392,7 @@ curl -X POST http://localhost:3000/api/cards \
 ### Title too long (> 200 characters)
 
 ```bash
-curl -X POST http://localhost:3000/api/cards \
+curl -X POST http://localhost:3000/cards \
   -H "Content-Type: application/json" \
   -d '{
     "title":"'$(printf 'A%.0s' {1..250})'",
@@ -460,7 +404,7 @@ curl -X POST http://localhost:3000/api/cards \
 ### Extra field not allowed (:closed true)
 
 ```bash
-curl -X POST http://localhost:3000/api/cards \
+curl -X POST http://localhost:3000/cards \
   -H "Content-Type: application/json" \
   -d '{
     "title":"Test",
@@ -487,7 +431,7 @@ The API now validates:
 
 ```powershell
 # Create card and save response
-$response = Invoke-RestMethod -Method Post -Uri http://localhost:3000/api/cards `
+$response = Invoke-RestMethod -Method Post -Uri http://localhost:3000/cards `
   -ContentType "application/json" `
   -Body '{"title":"Test","status":"todo"}'
 
@@ -495,7 +439,7 @@ $response = Invoke-RestMethod -Method Post -Uri http://localhost:3000/api/cards 
 $response.card.id
 
 # Update card
-Invoke-RestMethod -Method Put -Uri "http://localhost:3000/api/cards/$($response.card.id)" `
+Invoke-RestMethod -Method Put -Uri "http://localhost:3000/cards/$($response.card.id)" `
   -ContentType "application/json" `
   -Body '{"status":"done"}'
 ```
@@ -508,8 +452,8 @@ Invoke-RestMethod -Method Put -Uri "http://localhost:3000/api/cards/$($response.
 
 ## Notes
 
-- All data is currently stored **in-memory** using Clojure atoms
-- This is a temporary solution for development and testing
-- Data is lost when the server restarts
-- PostgreSQL integration will be implemented in future releases for persistent storage
-- Use `seed-data!` in the REPL to quickly populate test data
+- All data is persisted in a **PostgreSQL database**
+- Database connection is configured via environment variables in `.env` file
+- See `resources/db.edn` for connection pool settings
+- Run migrations with `clj -M:migratus migrate` before starting the server
+- For development, you can connect to the REPL and use functions from `kanban.db.card` namespace
